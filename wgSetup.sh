@@ -11,22 +11,23 @@ fi
 
 #Gather vars
 read -p "What adapter will the Pi access the Internet? " WG_ADAP
-read -p "Path? " WG_CONF
+read -p "What is full path to Wireguard conf file? " WG_CONF
 echo ""
 
 #Confirm vars
 echo "Pi accesses Internet with following adapter: $WG_ADAP"
-echo "Path: $WG_CONF"
+echo "Path to Wireguard conf file: $WG_CONF"
 echo ""
 
 read -n 1 -r -s -p $'Press enter to continue if the values above are correct. Otherwise "Ctrl + c" to reenter...\n'
 
 
 #Install and copy client conf
+apt update
 apt install wireguard resolvconf -y
 
 cp ${WG_CONF} /etc/wireguard/wg0.conf
-
+rm ${WG_CONF}
   
 
 
