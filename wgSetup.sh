@@ -23,7 +23,7 @@ read -n 1 -r -s -p $'Press enter to continue if the values above are correct. Ot
 
 
 #Install and copy client conf
-apt install wireguard -y
+apt install wireguard resolvconf -y
 
 cp ${WG_CONF} /etc/wireguard/wg0.conf
 
