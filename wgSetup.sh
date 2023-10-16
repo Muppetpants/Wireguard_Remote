@@ -11,10 +11,12 @@ fi
 
 #Gather vars
 read -p "What adapter will the Pi access the Internet? " WG_ADAP
+read -p "Path? " WG_CONF
 echo ""
 
 #Confirm vars
 echo "Pi accesses Internet with following adapter: $WG_ADAP"
+echo "Path: $WG_CONF"
 echo ""
 
 read -n 1 -r -s -p $'Press enter to continue if the values above are correct. Otherwise "Ctrl + c" to reenter...\n'
@@ -23,10 +25,7 @@ read -n 1 -r -s -p $'Press enter to continue if the values above are correct. Ot
 #Install and copy client conf
 apt install wireguard -y
 
-WG_PATH=$1
-WG_CLIENT=$(< WG_PATH)
-
-cp WG_CLIENT /etc/wireguard/wg0.conf
+cp ${WG_CONF} /etc/wireguard/wg0.conf
 
   
 
@@ -34,7 +33,8 @@ cp WG_CLIENT /etc/wireguard/wg0.conf
 #Configure NAT
 mkdir /etc/nftables.d
 
-echo '#nat.conf
+sudo tee -a /etc/nftables.d/nat.conf << EOF
+#nat.conf
 table ip nat {
         chain prerouting {
                 type nat hook prerouting priority dstnat; policy accept;
@@ -45,11 +45,12 @@ table ip nat {
                 oifname "${WG_ADAP}" masquerade
         }
 }
-' > "/etc/nftables.d/nat.conf"
+EOF
 
 
 mv /etc/nftables.conf /etc/nftables.conf.bak
-echo '#!/usr/sbin/nft -f
+sudo tee -a /etc/nftables.conf << EOF 
+#!/usr/sbin/nft -f
 
 flush ruleset
 
@@ -66,7 +67,7 @@ table inet filter {
 }
 
 include "/etc/nftables.d/*.conf"
-' >> /etc/nftables.conf
+EOF
 
 
 echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.d/99-sysctl.conf
