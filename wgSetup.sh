@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Description: Run script on a pi to create a VPS (deb/ubuntu) callback through wireguard
-#Usuage: Run as root, include full path to wireguard conf as first argument (sudo ./setup.sh /home/kali/Downloads/wg0.conf
+#Usuage: Run as root, include full path to wireguard conf as first argument (sudo ./WG-callback.sh)
 
 #Check root
 if [ "${EUID}" -ne 0 ]; then
